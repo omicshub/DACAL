@@ -1,0 +1,67 @@
+
+
+[mammary_epithelialn]
+raw_data_dirs = [
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b1",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b2",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b3",
+]
+raw_data_frags = [
+    "",
+    "",
+    "",
+]
+combs = [
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+]
+comb_ratios = [ 
+    [ 1 ], [ 1 ], [ 1 ], 
+]
+s_joint = [
+    [ 0 ], [ 1 ], [ 2 ], 
+]
+train_ratio = 1
+N = 512
+
+
+[human_pancreasn8]
+raw_data_dirs = [
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b1",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b2",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b3",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b4",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b5",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b6",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b7",
+    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b8",
+]
+raw_data_frags = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+]
+combs = [
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+]
+comb_ratios = [ 
+    [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], 
+]
+s_joint = [
+    [ 0 ], [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], 
+]
+train_ratio = 1
+N = 512
