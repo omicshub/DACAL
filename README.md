@@ -15,7 +15,11 @@ Take the dataset mammary_epithelialn we provided here as an example.
 Decompress the expression matrix file in DACAL/data
 
  Run the following command to train the DACAL model:
+ 
 $ CUDA_VISIBLE_DEVICES=0 py run.py --task mammary_epithelialn --exp e0
+
 To infer the labels after training, run the following command:
+
 $ CUDA_VISIBLE_DEVICES=0 py run.py --actions infer_latent --task mammary_epithelialn --exp e0  --init_model sp_latest
+
 You can obtain the predicted clustering labels under the folder /data/mammary_epithelialn, and the ARI, NMI and SC metrics. 
