@@ -1,16 +1,16 @@
-source("/root/data/asj/2022/sc-transformer-master/preprocess/utils.R")
+source("/root/DACAL/preprocess/utils.R")
 
 
-parser <- ArgumentParser() #创建一个解析对象
-parser$add_argument("--task", type = "character", default = "tea_single") #向该对象中添加你要关注的命令行参数和选项
-o <- parser$parse_args() #进行解析
+parser <- ArgumentParser() 
+parser$add_argument("--task", type = "character", default = "human_pancreasn8") 
+o <- parser$parse_args() 
 # o <- parser$parse_known_args()[[1]]  # for python interactive
 task <- o$task
 
-config <- parseTOML("configs/data.toml")[[task]] #parseTOML:解析TOML配置文件  
+config <- parseTOML("configs/data.toml")[[task]] 
 combs <- config$combs
 comb_ratios <- config$comb_ratios
-mods_ <- unique(unlist(combs)) #返回一个与x相同类的对象(通常是类似向量、类似数据帧或类似数组的对象)，但删除了重复的元素/行。
+mods_ <- unique(unlist(combs)) 
 mods <- vector()
 for (mod in c("atac", "rna", "adt")) {
     if (mod %in% mods_) {
@@ -40,9 +40,9 @@ merge_counts <- function(mod) {
         fp <- pj(input_dirs[dataset_id], paste0(mod, ".h5seurat"))
         if (file.exists(fp)) {
             prt("Loading ", fp, " ...\n")
-            sc <- LoadH5Seurat(fp) #从 h5Seurat 文件加载保存的"Seurat"对象,[features, samples]
+            sc <- LoadH5Seurat(fp)
             cell_num <- dim(sc)[2]
-            end_ids <- round(cumsum(comb_ratio) / sum(comb_ratio) * cell_num) #round:四舍五入
+            end_ids <- round(cumsum(comb_ratio) / sum(comb_ratio) * cell_num) 
             start_ids <- c(1, end_ids + 1)
             for (split_id in seq_along(comb)) {
                 if (mod %in% comb[[split_id]]) {
@@ -58,7 +58,7 @@ merge_counts <- function(mod) {
             subset_id <- toString(strtoi(subset_id) + length(comb))
         }
     }
-    feat_union <- Reduce(union, feat_list) #reduce：累积迭代函数
+    feat_union <- Reduce(union, feat_list) 
 
     # # debugging for adt
     # map(feat_list, length)
@@ -96,14 +96,14 @@ merge_counts <- function(mod) {
     mask_sum_list <- list()
     cell_num_total <- 0
     for (subset_id in names(feat_list)) {
-        mask_list[[subset_id]] <- as.integer(feat_union %in% feat_list[[subset_id]]) #as.integer用于将字符对象转换为整数对象
+        mask_list[[subset_id]] <- as.integer(feat_union %in% feat_list[[subset_id]]) 
         cell_num <- dim(sc_list[[subset_id]])[2]
         mask_sum_list[[subset_id]] <- mask_list[[subset_id]] * cell_num
         cell_num_total <- cell_num_total + cell_num
     }
     mask_sum_total <- Reduce(`+`, mask_sum_list)
     mask_ratio <- mask_sum_total / cell_num_total
-    feat_union <- feat_union[mask_sum_total > 5000 | mask_ratio > 0.5]#条件概率
+    feat_union <- feat_union[mask_sum_total > 5000 | mask_ratio > 0.5]
 
 
     # Find highly variable features
@@ -111,7 +111,7 @@ merge_counts <- function(mod) {
     for (subset_id in names(sc_list)) {
         sc_list[[subset_id]] <- subset(sc_list[[subset_id]], features = feat_union)
         if (mod == "rna") {
-            sc_list[[subset_id]] <- FindVariableFeatures(sc_list[[subset_id]], nfeatures = 2000) #
+            sc_list[[subset_id]] <- FindVariableFeatures(sc_list[[subset_id]], nfeatures = 4000) #
         } else if (mod == "adt") {
             VariableFeatures(sc_list[[subset_id]]) <- rownames(sc_list[[subset_id]])
         } else {
@@ -121,7 +121,7 @@ merge_counts <- function(mod) {
     }
 
     if (mod == "rna") {
-        var_feat_integ <- SelectIntegrationFeatures(sc_list, nfeatures = 2000)
+        var_feat_integ <- SelectIntegrationFeatures(sc_list, nfeatures = 4000)
     } else {
         var_feat_integ <- Reduce(union, var_feat_list)
     }
@@ -203,7 +203,7 @@ merge_frags <- function() {
             subset_id <- toString(strtoi(subset_id) + length(comb))
         }
     }
-    feat_merged <- Signac::reduce(do.call("c", unname(feat_list))) #unname:从对象中删除名称或名称,但是好像没变化啊
+    feat_merged <- Signac::reduce(do.call("c", unname(feat_list))) 
 
     # Filter out bad peaks based on length
     feat_widths <- width(feat_merged)
