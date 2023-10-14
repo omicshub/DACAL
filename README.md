@@ -29,7 +29,7 @@ Decompress the expression matrix file in DACAL/data
 
  Run the following command to train the DACAL model:
  
-$ CUDA_VISIBLE_DEVICES=0 py run.py --task mammary_epithelialn --exp e0
+$ CUDA_VISIBLE_DEVICES=0 py run.py --task mammary_epithelial --exp e0
 
 To infer the labels after training, run the following command:
 
