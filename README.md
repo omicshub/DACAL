@@ -33,10 +33,10 @@ $ CUDA_VISIBLE_DEVICES=0 py run.py --task mammary_epithelialn --exp e0
 
 To infer the labels after training, run the following command:
 
-$ CUDA_VISIBLE_DEVICES=0 py run.py --actions infer_latent --task mammary_epithelialn --exp e0  --init_model sp_latest
+$ CUDA_VISIBLE_DEVICES=0 py run.py --actions infer_latent --task mammary_epithelial --exp e0  --init_model sp_latest
 
 You can obtain the predicted clustering labels and the ARI, NMI and SC metrics are also calculated in this step. 
 
 # outputs
 
-You can obtain the predicted clustering labels in the file '/DACAL/result/mammary_epithelialn/e0/default/represent/y.csv'. The indicator of Deviation Ratio (DR) can be calculated by running DACAL/metrics_DR.ipynb
+You can obtain the predicted clustering labels in the file '/DACAL/result/mammary_epithelial/e0/default/represent/y.csv'. The indicator of Deviation Ratio (DR) can be calculated by running DACAL/metrics_DR.ipynb
