@@ -1,9 +1,9 @@
-source("/root/workspace/code/sc-transformer/preprocess/utils.R")
+source("/DACAL/preprocess/utils.R")
 
 
 parser <- ArgumentParser()
-parser$add_argument("--task", type = "character", default = "dogma_query")
-parser$add_argument("--reference", type = "character", default = "atlas_no_dogma")
+parser$add_argument("--task", type = "character", default = "human_pancreasn8")
+parser$add_argument("--reference", type = "character", default = "human_pancreasn8")
 o <- parser$parse_args()
 task <- o$task
 
