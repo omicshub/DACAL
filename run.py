@@ -139,9 +139,9 @@ def init_seed():
 
 def init_dirs():
     if o.use_shm == 1:
-        o.data_dir = pj("./data/processed",  o.task)
+        o.data_dir = pj("./data",  o.task)
     else:
-        o.data_dir = pj("./data/processed",  o.task)
+        o.data_dir = pj("./data",  o.task)
     o.result_dir = pj("result", o.task, o.exp, o.model)
     o.pred_dir = pj(o.result_dir, "predict", o.init_model)
     o.train_dir = pj(o.result_dir, "train")
@@ -385,7 +385,7 @@ def dp_infer(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=50, weight_concentration_prior=1e-200,mean_precision_prior = 120, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
+        n_components=50, weight_concentration_prior=1e-100,mean_precision_prior = 100, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label = th.Tensor(np.array(predict_label_array)).unsqueeze(1).cuda()
