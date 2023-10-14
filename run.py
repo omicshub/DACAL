@@ -88,12 +88,10 @@ parser.add_argument('--debug', type=int, default=1, choices=[0, 1],
     help='Print intermediate variables')
 # o, _ = parser.parse_known_args()  # for python interactive
 o = parser.parse_args()
-# path_label = '/root/asj/asj/2023/0118/sc-transformer-gmvaextoytoz/data/z1/label_seurat/label.csv'
-if o.task == 'chen_10':
-    path_label = './data/label_chen_10.csv'
-else:
-    # path_label = '/root/data/asj/2023/0620_2/scDAC_parameter/data/wnn1/label2567.csv'
-    path_label = '/root/data/asj/2023/0620_2/scDAC_parameter/data/h_p/label12.csv'
+if o.task == 'mammary_epithelial'
+    path_label = './data/mammary_epithelial/celltype.csv'
+else o.task == 'human_pancreasn8'
+    path_label = './data/human_pancreasn8/celltype.csv'
 # tracemalloc.start()
 # start_time = time.time()
 # print("start_time:", start_time)
@@ -141,11 +139,9 @@ def init_seed():
 
 def init_dirs():
     if o.use_shm == 1:
-        # o.data_dir = pj("/root/asj/asj/2023/0118/sc-transformer-gmvaextoytoz/data/processed",  o.task)
-        o.data_dir = pj("/root/asj/asj/2023/0620_2/scDAC_parameter/data/processed",  o.task)
+        o.data_dir = pj("./data/processed",  o.task)
     else:
-        # o.data_dir = pj("/root/asj/asj/2023/0118/sc-transformer-gmvaextoytoz/data/processed",  o.task)
-        o.data_dir = pj("/root/asj/asj/2023/0620_2/scDAC_parameter/data/processed",  o.task)
+        o.data_dir = pj("./data/processed",  o.task)
     o.result_dir = pj("result", o.task, o.exp, o.model)
     o.pred_dir = pj(o.result_dir, "predict", o.init_model)
     o.train_dir = pj(o.result_dir, "train")
@@ -373,7 +369,7 @@ def dp(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=30, weight_concentration_prior=1e-100,mean_precision_prior = 100,covariance_type='diag',init_params ='kmeans', max_iter=100, warm_start = True
+        n_components=50, weight_concentration_prior=1e-100,mean_precision_prior = 100,covariance_type='diag',init_params ='kmeans', max_iter=100, warm_start = True
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label_array = bgm.predict(z_np)
@@ -389,7 +385,7 @@ def dp_infer(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=30, weight_concentration_prior=1e-200,mean_precision_prior = 120, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
+        n_components=50, weight_concentration_prior=1e-200,mean_precision_prior = 120, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label = th.Tensor(np.array(predict_label_array)).unsqueeze(1).cuda()
@@ -400,48 +396,6 @@ def dp_infer(z):
     mean_precision_dp = th.Tensor(np.array(bgm.mean_precision_))   
     return mean_dp, weight_concentration_dp, mean_precision_dp, precisions_cholesky_dp, degrees_of_freedom_dp, predict_label
 
-
-# def cluster_index_calculer(z_all, predict_label):
-#     z_all_cpu = z_all.cpu()
-#     predict_label_cpu = predict_label.cpu()
-#     label_true = utils.load_csv(path_label)
-#     label_tlist = utils.transpose_list(label_true)[1][1:]
-#     label_plist = utils.transpose_list(predict_label_cpu)[0]
-#     ari = adjusted_rand_score(label_tlist, label_plist) #l1 kpca20
-#     nmi = normalized_mutual_info_score(label_tlist, label_plist)
-#     sc = silhouette_score(z_all_cpu, label_plist)    
-#     return ari, nmi, sc
-# def plt_ari(epoch_id_list, ari_list):
-#     y = ari_list
-#     x = epoch_id_list
-#     plt.subplots(figsize = (50, 4))
-#     plt.bar(x, y, width=0.8)
-#     plt.xticks(x)  # 绘制x刻度标签
-    
-#     fig_dir = pj(o.result_dir, "represent", "fig")
-#     utils.mkdirs(fig_dir, remove_old=False)
-#     plt.savefig(pj(fig_dir, "ari.png"))
-
-# def plt_nmi(epoch_id_list, nmi_list):
-#     y = nmi_list
-#     x = epoch_id_list
-#     plt.subplots(figsize = (50, 4))
-#     plt.bar(x, y, width=0.8)
-#     plt.xticks(x)  # 绘制x刻度标签
-    
-#     fig_dir = pj(o.result_dir, "represent", "fig")
-#     plt.savefig(pj(fig_dir, "nmi.png"))
-
-
-# def plt_sc(epoch_id_list, sc_list):
-#     y = sc_list
-#     x = epoch_id_list
-#     plt.subplots(figsize = (50, 4))
-#     plt.bar(x, y, width=0.8)
-#     plt.xticks(x)  # 绘制x刻度标签
-    
-#     fig_dir = pj(o.result_dir, "represent", "fig")
-#     plt.savefig(pj(fig_dir, "sc.png"))
 
 def get_dataloaders(split, train_ratio=None):
     data_loaders = {}
@@ -688,55 +642,6 @@ def infer_latent_dp(save_input=False):
                 z_all = th.cat(z_list, dim = 0)
     return(z_all)
 
-# def infer_latent(save_input=False):
-#     print("Inferring ...")
-#     dirs = {}
-#     base_dir = pj(o.result_dir, "represent", o.init_model)
-#     data_loaders = get_dataloaders("test", train_ratio=0)
-#     net.eval()
-#     with th.no_grad():
-#         for subset_id, data_loader in data_loaders.items():
-#             print("Processing subset %d: %s" % (subset_id, str(o.combs[subset_id])))
-#             dirs[subset_id] = {"z": {}, "x": {}}
-#             dirs[subset_id]["z"]["rna"] = pj(base_dir, "subset_"+str(subset_id), "z", "rna")
-#             utils.mkdirs(dirs[subset_id]["z"]["rna"], remove_old=True)   
-#             if save_input:
-#                 for m in o.combs[subset_id]:
-#                     dirs[subset_id]["x"][m] = pj(base_dir, "subset_"+str(subset_id), "x", m)
-#                     utils.mkdirs(dirs[subset_id]["x"][m], remove_old=True)
-#             fname_fmt = utils.get_name_fmt(len(data_loader))+".csv"
-            
-#             for i, data in enumerate(tqdm(data_loader)):
-#                 data = utils.convert_tensors_to_cuda(data)
-#                 _, z= net.scdp(data) 
-#                 utils.save_tensor_to_csv(z, pj(dirs[subset_id]["z"]["rna"], fname_fmt) % i)
-#                 if save_input:
-#                     for m in o.combs[subset_id]:
-#                         utils.save_tensor_to_csv(data["x"][m], pj(dirs[subset_id]["x"][m], fname_fmt) % i)
-
-#                 # conditioned on each individual modalities
-#                 if i >0:
-#                     z_all = th.cat((z_all, z), dim = 0)
-#                 else:
-#                     z_all = z
-#             _, _, _, _, _, predict_label = dp_infer(z_all)
-#             predict_label_list = utils.convert_tensor_to_list(predict_label)
-#             if o.task == 'chen_10':
-#                 utils.save_list_to_csv(predict_label_list, "./data/chen_10/predict_label.csv")
-#             else:
-#                 utils.save_list_to_csv(predict_label_list, "./data/chen_8/predict_label.csv")          
-
-#             z_all_cpu = z_all.cpu()
-#             predict_label_cpu = predict_label.cpu()
-#             label_true = utils.load_csv(path_label)
-#             label_tlist = utils.transpose_list(label_true)[1][1:]
-#             label_plist = utils.transpose_list(predict_label_cpu)[0]
-#             ari = adjusted_rand_score(label_tlist, label_plist) #l1 kpca20
-#             nmi = normalized_mutual_info_score(label_tlist, label_plist)
-#             sc = silhouette_score(z_all_cpu, label_plist)
-#             print("ari:", ari)
-#             print("nmi:", nmi)
-#             print("sc:", sc)
 def infer_latent(only_joint=False, impute=False, save_input=False):
     print("Inferring ...")
     dirs = {}
@@ -810,13 +715,9 @@ def infer_latent(only_joint=False, impute=False, save_input=False):
                         }
                         if m in data["e"].keys():
                             input_data["e"][m] = data["e"][m]
-                        #_, _, _, _, z, c, b, *_ = net.sct(input_data)  # N * K
-                        # _, c_ymu, _, _, _, z, y_cat_list, _, _, _, n_covariance2, n_mu, d2, w_covariance3, _ = net.dpmm(input_data)  # N * K
                         _, _, _, _,c, _= net.scdp(input_data)  # N * K
                      
-                        # print(input_data['x']['rna'].shape, z.shape)
-                        # utils.save_tensor_to_csv(z, pj(dirs[subset_id]["z"][m], fname_fmt) % i)    
-                        # utils.save_tensor_to_csv(predict_label, pj(dirs[subset_id]["predict_label"][m], fname_fmt) % i)  
+
                     
                     if i >0:
                         z_all = th.cat((z_all, c), dim = 0)
@@ -826,26 +727,14 @@ def infer_latent(only_joint=False, impute=False, save_input=False):
                 # print(z_all.shape)
             
 
-
-            # utils.mkdirs(dirs[subset_id]["y"], remove_old=True)
-            #     # print("predict_label",predict_label)
-            #     # print(dirs[subset_id]['y'])
-            #     # print( 'here', pj(str(dirs[subset_id]),"y"))
-            # # utils.save_tensor_to_csv(predict_label, dirs[subset_id]["y"]+'/00.csv')
-            # utils.mkdirs(dirs[subset_id]["zz"], remove_old=True)
-            # utils.save_tensor_to_csv(z_all, dirs[subset_id]["zz"]+'/00.csv')
             z_all_large.append(z_all)
             # print(len(z_all_large))
         # print("111111111",z_all_large.shape)
         z_all_large = th.cat(z_all_large)
         _, _, _, _, _, predict_label = dp_infer(z_all_large)
         # print(z_all_large.shape)
-        utils.save_tensor_to_csv(z_all_large, '/root/asj/asj/2023/0928_1/scDAC/result/mammary_epithelialn/e0/default/represent/z.csv')
-        utils.save_tensor_to_csv(predict_label, '/root/asj/asj/2023/0928_1/scDAC/result/mammary_epithelialn/e0/default/represent/y.csv')
-        path_label = '/root/asj/asj/2023/0919/scDAC/data/mammary_epithelial/celltype.csv'
-        # utils.save_tensor_to_csv(z_all_large, '/root/asj/asj/2023/0921/scDAC/result/pancreas2/z.csv')
-        # utils.save_tensor_to_csv(predict_label, '/root/asj/asj/2023/0921/scDAC/result/pancreas2/y.csv')
-        # path_label = '/root/asj/asj/2023/0620_2/scDAC_parameter/data/h_p/label12.csv'
+        utils.save_tensor_to_csv(z_all_large, './result/mammary_epithelialn/e0/default/represent/z.csv')
+        utils.save_tensor_to_csv(predict_label, './result/mammary_epithelialn/e0/default/represent/y.csv')
         label_true = utils.load_csv(path_label)
         label_tlist = utils.transpose_list(label_true)[1][1:]
         predict_label_cpu = predict_label.cpu()
