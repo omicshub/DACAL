@@ -1,11 +1,6 @@
 
 
 [mammary_epithelial]
-raw_data_dirs = [
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b1",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b2",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b3",
-]
 raw_data_frags = [
     "",
     "",
@@ -27,16 +22,6 @@ N = 512
 
 
 [human_pancreasn8]
-raw_data_dirs = [
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b1",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b2",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b3",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b4",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b5",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b6",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b7",
-    "/root/data/asj/2023/0620_2/scDAC_parameter/data/hp_8n/b8",
-]
 raw_data_frags = [
     "",
     "",
