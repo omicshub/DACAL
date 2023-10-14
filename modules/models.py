@@ -213,9 +213,8 @@ class LossCalculator_DP(nn.Module):
     def forward(self, inputs, x_r_pre, z,s_r_pre, c):
         o = self.o
         x = inputs["x"]
-        e = inputs["e"]
         s = inputs["s"]["joint"]
-        loss_recon = self.calc_recon_loss(x, s, e, x_r_pre, s_r_pre)
+        loss_recon = self.calc_recon_loss(x, s, x_r_pre, s_r_pre)
 
         if o.epoch_id > 300:
             loss_dp = self.calcudp_loss(c)
@@ -237,7 +236,7 @@ class LossCalculator_DP(nn.Module):
     #     for m in x.keys():
     #         losses[m] = (self.pois_loss(x_r_pre[m], x[m]) * e[m]).sum()
     #     return sum(losses.values()) / x[m].size(0)
-    def calc_recon_loss(self, x, s, e, x_r_pre, s_r_pre):
+    def calc_recon_loss(self, x, s, x_r_pre, s_r_pre):
         o = self.o
         losses = {}
         # Reconstruciton losses of x^m
@@ -248,7 +247,7 @@ class LossCalculator_DP(nn.Module):
                 losses[m] = self.bce_loss(x_r_pre[m], x[m]).sum()
                 # losses[m] = self.pois_loss(x_r_pre[m], x[m]).sum()
             else:
-                losses[m] = (self.pois_loss(x_r_pre[m], x[m]) * e[m]).sum()
+                losses[m] = (self.pois_loss(x_r_pre[m], x[m])).sum()
                 # print("lossrex", losses[m])
         if s_r_pre is not None:
             losses["s"] = self.cross_entropy_loss(s_r_pre, s.squeeze(1)).sum() * 1004
