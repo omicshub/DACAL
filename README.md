@@ -39,4 +39,4 @@ You can obtain the predicted clustering labels under the folder /data/mammary_ep
 
 # outputs
 
-You can obtain the predicted clustering labels under the folder /data/chen_10. The indicator of Deviation Ratio (DR) can be calculated by running DACAL/metrics_DR.ipynb
+You can obtain the predicted clustering labels in the file './DACAL/result/mammary_epithelialn/e0/default/represent/y.csv'. The indicator of Deviation Ratio (DR) can be calculated by running DACAL/metrics_DR.ipynb
