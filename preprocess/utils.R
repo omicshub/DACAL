@@ -1,4 +1,4 @@
-source("/root/asj/asj/2023/0620_2/scDAC_parameter/utils/utils.R")
+source("/DACAL/utils/utils.R")
 library(Seurat)
 library(SeuratDisk)
 library(Signac)
