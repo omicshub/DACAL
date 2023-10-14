@@ -1,6 +1,6 @@
 
 
-[mammary_epithelialn]
+[mammary_epithelial]
 raw_data_dirs = [
     "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b1",
     "/root/data/asj/2023/0620_2/scDAC_parameter/data/mam_e/b2",
