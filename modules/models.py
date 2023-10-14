@@ -77,7 +77,6 @@ class SCDP(nn.Module):
     def forward(self, inputs):
         o = self.o
         x = inputs["x"]
-        e = inputs["e"]
         s = None
         if o.drop_s == 0 and "s" in inputs.keys():
             s_drop_rate = o.s_drop_rate if self.training else 0
@@ -89,8 +88,8 @@ class SCDP(nn.Module):
         for m in x.keys():
             x_pp[m] = preprocess(x[m], m, o.dims_x[m], o.task) #如果是label：one hot,如果是RNA等, 就要平滑处理
             
-            if m in ["rna", "adt"]:  # use mask 
-                h = x_pp[m] * e[m] #两个rna数据集，只考虑其中相同的
+            if m in ["rna", "adt"]: 
+                h = x_pp[m] 
             else:
                 h = x_pp[m]
             # encoding
