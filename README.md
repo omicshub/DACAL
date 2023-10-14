@@ -20,7 +20,7 @@ Whether we do the preprocessing step ourselves or with the DACAL's code in the "
 
 2. The cellnames of every expression matrix and the feature number and feature name of the highly variable genes.
 
-After decompress or preprocess the data, we can split the expression matrices by running the DACAL/preprocess/preprocess_split.ipynb to obtain the input for DACAL.
+After decompress or preprocess the data, we can split the expression matrices by running the DACAL/preprocess_split.ipynb to obtain the input for DACAL.
 
 # Run DACAL
 Take the dataset mammary_epithelialn we provided here as an example.
