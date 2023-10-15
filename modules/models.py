@@ -333,7 +333,7 @@ def preprocess(x, name, dim, task):
     #     x = x.log1p()
     elif name == "rna":
         # x = x.log1p()
-        x = x
+        x = x.log1p()
     elif name == "adt":
         x = x.log1p()
     return x
