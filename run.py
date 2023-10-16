@@ -860,7 +860,7 @@ def infer_latent(only_joint=False, impute=False, save_input=False):
 #             sc = silhouette_score(z_all_cpu, label_plist)
 #             print("ari:", ari)
 #             print("nmi:", nmi)
-#             print("sc:", sc)
+#             print("sc:", (sc+1)/2)
 main()
 # CPU memory and time
 # current, peak = tracemalloc.get_traced_memory()
