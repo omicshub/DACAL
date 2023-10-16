@@ -369,7 +369,7 @@ def dp(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=30, weight_concentration_prior=1e-100,mean_precision_prior = 100,covariance_type='diag',init_params ='kmeans', max_iter=100, warm_start = True
+        n_components=30, weight_concentration_prior=1e-200,mean_precision_prior = 200,covariance_type='diag',init_params ='kmeans', max_iter=100, warm_start = True
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label_array = bgm.predict(z_np)
@@ -385,7 +385,7 @@ def dp_infer(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=30, weight_concentration_prior=1e-100,mean_precision_prior = 100, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
+        n_components=30, weight_concentration_prior=1e-200,mean_precision_prior = 200, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label = th.Tensor(np.array(predict_label_array)).unsqueeze(1).cuda()
