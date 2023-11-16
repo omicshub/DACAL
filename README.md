@@ -9,7 +9,7 @@ Sklearn --- 1.0.2
 
 Numpy --- 1.21.6
 
-# data avaluablity
+# data availability
 In the "data" folder, we provide the compressed format of all the datasets used in the paper. If you want to use them, please download and decompress them first.
 
 If you want to use DACAL to analyse other data, please preprocess the data by Seurat referring to https://satijalab.org/seurat/articles/pbmc3k_tutorial, or use the codes provided by DACAL in the "preprocess" folder.
