@@ -50,3 +50,27 @@ s_joint = [
 ]
 train_ratio = 1
 N = 512
+
+
+[simu_data]
+raw_data_frags = [
+    "",
+    "",
+    "",
+    "",
+]
+combs = [
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+    [ ["rna"] ],
+
+]
+comb_ratios = [ 
+    [ 1 ], [ 1 ], [ 1 ], [ 1 ],
+]
+s_joint = [
+    [ 0 ], [ 1 ], [ 2 ], [ 3 ],
+]
+train_ratio = 1
+N = 512
