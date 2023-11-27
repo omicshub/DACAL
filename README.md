@@ -23,7 +23,6 @@ To infer the labels after training, run the following command:
 
     CUDA_VISIBLE_DEVICES=0 py run.py --actions infer_latent --task mammary_epithelial --init_model sp_latest
 
-
 We can obtain the predicted clustering labels and the ARI, NMI and SC metrics are also calculated in this step. 
 
 # outputs
@@ -58,12 +57,18 @@ We can use "DACAL/preprocess_split.ipynb" to split the matrix to vectors. The ve
 
 4. To infer the labels after training, run the following command:
 
-       CUDA_VISIBLE_DEVICES=0 py run.py --action infer_latent --task [datasetname] --init-model sp_latest
-
+      CUDA_VISIBLE_DEVICES=0 py run.py --action infer_latent --task [datasetname] --init-model sp_latest
 
 Then we can obtain the predict label and ARI, NMI and SC sore.
 
 
 5.The indicator of Deviation Ratio (DR) can be calculated by running "DACAL/metrics_DR.ipynb".
+
+# Available Options
+
+There are some available options in DACAL.
+
+1. The α in 
+
 
 
