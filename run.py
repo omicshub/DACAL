@@ -151,22 +151,6 @@ def init_dirs():
 
 
 def load_data_config():
-    # get_dims_x()
-    # o.mods = list(o.dims_x.keys())
-    # o.mod_num = len(o.dims_x)
-    # global data_config
-    # data_config = utils.load_toml("configs/data.toml")[o.task]
-    # for k, v in data_config.items():
-    #     vars(o)[k] = v
-
-    # o.s_joint, o.combs, o.s, o.dims_s = utils.gen_all_batch_ids(o.s_joint, o.combs)
-    
-
-    
-    # if o.reference != '':
-    #     data_config_ref = utils.load_toml("configs/data.toml")[o.reference]
-    #     _, _, _, o.dims_s = utils.gen_all_batch_ids(data_config_ref["s_joint"], 
-    #                                                 data_config_ref["combs"])
     if o.reference == '':
         o.dims_x, o.dims_chr, o.mods = get_dims_x(ref=0)
         o.ref_mods = o.mods
@@ -242,18 +226,6 @@ def init_model():
     """
     Initialize the model, optimizer, and benchmark
     """
-    # global net, discriminator, optimizer_net, optimizer_disc
-    # net = models.Net_DP(o).cuda()
-    # optimizer_net = th.optim.AdamW(net.parameters(), lr=o.lr)
-    # if o.init_model != '':
-    #     fpath = pj(o.train_dir, o.init_model)
-    #     savepoint = th.load(fpath+".pt")
-    #     net.load_state_dict(savepoint['net_states'])
-    #     optimizer_net.load_state_dict(savepoint['optim_net_states'])
-    #     benchmark.update(utils.load_toml(fpath+".toml")['benchmark'])
-    #     print('Model is initialized from ' + fpath + ".pt")
-    # net_param_num = sum([param.data.numel() for param in net.parameters()])
-    # print('Parameter number: %.3f M' % (net_param_num / 1e6))
     global net, discriminator, optimizer_net, optimizer_disc
     # global net, optimizer_net
     
@@ -266,19 +238,6 @@ def init_model():
     # print('Parameter number: %.3f M' % (net_param_num / 1e6))
     print('Parameter number: %.3f M' % ((net_param_num+disc_param_num) / 1e6))
 
-    # Load benchmark
-    # if o.init_model != '':
-    #     if o.init_from_ref == 0:
-    #         fpath = pj(o.train_dir, o.init_model)
-    #         savepoint_toml = utils.load_toml(fpath+".toml")
-    #         benchmark.update(savepoint_toml['benchmark'])
-    #         o.ref_epoch_num = savepoint_toml["o"]["ref_epoch_num"]
-    #     else:
-    #         fpath = pj("result", o.reference, o.rf_experiment, o.model, "train", o.init_model)
-    #         benchmark.update(utils.load_toml(fpath+".toml")['benchmark'])
-    #         o.ref_epoch_num = benchmark["epoch_id_start"]
-    # else:
-    #     o.ref_epoch_num = 0
 
     # Initialize optimizers
     optimizer_net = th.optim.AdamW(net.parameters(), lr=o.lr)
@@ -323,19 +282,9 @@ def get_dims_x(ref):
     mods = list(dims_x.keys())
     
     return dims_x, dims_chr, mods
-    # dims_x = utils.load_csv(pj(o.data_dir, "feat", "feat_dims.csv"))
-    # dims_x = utils.transpose_list(dims_x)
-    # o.dims_x = {}
-    # for i in range(1, len(dims_x)):
-    #     m = dims_x[i][0]
-    #     if m == "atac":
-    #         o.dims_chr = list(map(int, dims_x[i][1:]))
-    #         o.dims_x[m] = sum(o.dims_chr)
-    #     else:
-    #         o.dims_x[m] = int(dims_x[i][1])
 
 
-    # print("Input feature numbers: ", o.dims_x)
+
 
 
 def train():
@@ -352,24 +301,13 @@ def train():
             net.loss_calculator_dp.mean_dp, net.loss_calculator_dp.weight_concentration_dp,net.loss_calculator_dp.mean_precision_dp,net.loss_calculator_dp.precisions_cholesky_dp, net.loss_calculator_dp.degrees_of_freedom_dp, net.scdp.predict_label = dp(c)
         else:
             pass
-        # ari, nmi, sc = cluster_index_calculer(z, net.scdp.predict_label)
-        # print("ari:", ari)
-        # print("nmi:", nmi)
-        # print("sc:", sc)
-        # epoch_id_list.append(epoch_id)
-        # ari_list.append(ari)
-        # nmi_list.append(nmi)
-        # sc_list.append(sc)
-        # plt_ari(epoch_id_list, ari_list)
-        # plt_nmi(epoch_id_list, nmi_list)
-        # plt_sc(epoch_id_list, sc_list)
         check_to_save(epoch_id)
 
 def dp(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=30, weight_concentration_prior=1e-200,mean_precision_prior = 200,covariance_type='diag',init_params ='kmeans', max_iter=100, warm_start = True
+        n_components=50, weight_concentration_prior=1e-200,mean_precision_prior = 5,covariance_type='diag',init_params ='kmeans', max_iter=100, warm_start = True
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label_array = bgm.predict(z_np)
@@ -385,7 +323,7 @@ def dp_infer(z):
     # z_np = (z).cpu().detach().numpy()   
     z_np = z.cpu().detach().numpy()   
     bgm = BayesianGaussianMixture(
-        n_components=30, weight_concentration_prior=1e-200,mean_precision_prior = 120, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
+        n_components=50, weight_concentration_prior=1e-200,mean_precision_prior = 5, covariance_type='full',  init_params ='kmeans', random_state=42, max_iter=1000
         ).fit(z_np)
     predict_label_array = bgm.predict(z_np)
     predict_label = th.Tensor(np.array(predict_label_array)).unsqueeze(1).cuda()
@@ -458,19 +396,7 @@ def run_epoch(data_loader, split, epoch_id=0):
     else:
         assert False, "Invalid split: %s" % split
     net.o.epoch_id = epoch_id
-    # losses = []
-    # loss_total = 0
-    # for i, data in enumerate(data_loader):
-    #     loss = run_iter(split, data)
-    #     losses.append(loss)
-    #     loss_total += loss
-    #     if o.print_iters > 0 and (i+1) % o.print_iters == 0:
-    #         print('Epoch: %d/%d, Batch: %d/%d, %s loss: %.3f' % (epoch_id+1,
-    #         o.epoch_num, i+1, len(data_loader), split, loss))
-    # loss_avg = loss_total / len(data_loader)
-    # print('Epoch: %d/%d, %s loss: %.3f\n' % (epoch_id+1, o.epoch_num, split, loss_avg))
-    # benchmark[split+'_loss'].append((float(epoch_id), float(loss_avg)))
-    # return loss_avg
+
     losses = []
     for i, data in enumerate(data_loader):
         loss = run_iter(split, epoch_id, i, data)
@@ -728,8 +654,6 @@ def infer_latent(only_joint=False, impute=False, save_input=False):
             
 
             z_all_large.append(z_all)
-            # print(len(z_all_large))
-        # print("111111111",z_all_large.shape)
         z_all_large = th.cat(z_all_large)
         _, _, _, _, _, predict_label = dp_infer(z_all_large)
         # print(z_all_large.shape)
@@ -746,121 +670,7 @@ def infer_latent(only_joint=False, impute=False, save_input=False):
         print("ari:", ari)
         print("nmi:", nmi)
         print("sc:", sc)
-# def infer_latent(only_joint=True, impute=False, save_input=False):
-#     print("Inferring ...")
-#     dirs = {}
-#     base_dir = pj(o.result_dir, "represent", o.init_model)
-#     data_loaders = get_dataloaders("test", train_ratio=0)
-#     net.eval()
-#     with th.no_grad():
-#         for subset_id, data_loader in data_loaders.items():
-#             print("Processing subset %d: %s" % (subset_id, str(o.combs[subset_id])))
-            
-#             #dirs[subset_id] = {"z": {}, "x_r": {}, "x": {}, "w_lis1": {}}
-#             # dirs[subset_id] = {"z": {}, "x_r_pre": {}, "x": {}, "y_cat_list": {}, "c_ymu": {}, "n_covariance2": {}, "n_mu": {}, "d2": {}, "w_covariance3": {}}
-#             # dirs[subset_id] = {"z": {}, "x_r_pre": {}, "x": {}, "predict_label":{}}
-#             dirs[subset_id] = {"z": {}, "x_r_pre": {}, "x": {}}
-#             dirs[subset_id]["z"]["joint"] = pj(base_dir, "subset_"+str(subset_id), "z", "joint")
-#             utils.mkdirs(dirs[subset_id]["z"]["joint"], remove_old=True)
-#             if not only_joint:
-#                 for m in o.combs[subset_id]:
-#                     dirs[subset_id]["z"][m] = pj(base_dir, "subset_"+str(subset_id), "z", m)
-#                     utils.mkdirs(dirs[subset_id]["z"][m], remove_old=True)
-#                     # dirs[subset_id]["predict_label"][m] = pj(base_dir, "subset_"+str(subset_id), "predict_label", m)
-#                     # utils.mkdirs(dirs[subset_id]["predict_label"][m], remove_old=True)
-#                     dirs[subset_id]["x_r_pre"][m] = pj(base_dir, "subset_"+str(subset_id), "x_r_pre", m)
-#                     utils.mkdirs(dirs[subset_id]["x_r_pre"][m], remove_old=True)
-#                     # dirs[subset_id]["c_ymu"][m] = pj(base_dir, "subset_"+str(subset_id), "c_ymu", m)
-#                     # utils.mkdirs(dirs[subset_id]["c_ymu"][m], remove_old=True)     
-#                     # dirs[subset_id]["n_covariance2"][m] = pj(base_dir, "subset_"+str(subset_id), "n_covariance2", m)
-#                     # utils.mkdirs(dirs[subset_id]["n_covariance2"][m], remove_old=True)  
-#                     # dirs[subset_id]["n_mu"][m] = pj(base_dir, "subset_"+str(subset_id), "n_mu", m)
-#                     # utils.mkdirs(dirs[subset_id]["n_mu"][m], remove_old=True)         
-#                     # dirs[subset_id]["d2"][m] = pj(base_dir, "subset_"+str(subset_id), "d2", m)
-#                     # utils.mkdirs(dirs[subset_id]["d2"][m], remove_old=True)  
-#                     # dirs[subset_id]["w_covariance3"][m] = pj(base_dir, "subset_"+str(subset_id), "w_covariance3", m)
-#                     # utils.mkdirs(dirs[subset_id]["w_covariance3"][m], remove_old=True)            
-#             if impute:
-#                 for m in o.mods:
-#                     dirs[subset_id]["x_r"][m] = pj(base_dir, "subset_"+str(subset_id), "x_r", m)
-#                     utils.mkdirs(dirs[subset_id]["x_r"][m], remove_old=True)
-#             if save_input:
-#                 for m in o.combs[subset_id]:
-#                     dirs[subset_id]["x"][m] = pj(base_dir, "subset_"+str(subset_id), "x", m)
-#                     utils.mkdirs(dirs[subset_id]["x"][m], remove_old=True)
-#             fname_fmt = utils.get_name_fmt(len(data_loader))+".csv"
-            
-#             for i, data in enumerate(tqdm(data_loader)):
-#                 data = utils.convert_tensors_to_cuda(data)
-#                 # conditioned on all observed modalities
-#                 #x_r_pre, _, _, _, z, _, _, *_ = net.dpmm(data)  # N * K
-#                 x_r_pre, z= net.scdp(data) 
-#                 utils.save_tensor_to_csv(z, pj(dirs[subset_id]["z"]["joint"], fname_fmt) % i)
-#                 # utils.save_tensor_to_csv(x_r_pre[m], pj(dirs[subset_id]["x_r_pre"][m], fname_fmt) % i)
-#                 # utils.save_tensor_to_csv(predict_label, pj(dirs[subset_id]["predict_label"], fname_fmt) % i)
-#                 if impute:
-#                     x_r = models.gen_real_data(x_r_pre, sampling=True)
-#                     for m in o.mods:
-#                         utils.save_tensor_to_csv(x_r[m], pj(dirs[subset_id]["x_r"][m], fname_fmt) % i)
-#                 if save_input:
-#                     for m in o.combs[subset_id]:
-#                         utils.save_tensor_to_csv(data["x"][m], pj(dirs[subset_id]["x"][m], fname_fmt) % i)
 
-#                 # conditioned on each individual modalities
-#                 if not only_joint:
-#                     for m in data["x"].keys():
-#                         input_data = {
-#                             "x": {m: data["x"][m]},
-#                             "s": data["s"],  #这儿可能得删掉，
-#                             "e": {}
-#                         }
-#                         if m in data["e"].keys():
-#                             input_data["e"][m] = data["e"][m]
-#                         #_, _, _, _, z, c, b, *_ = net.sct(input_data)  # N * K
-#                         # _, c_ymu, _, _, _, z, y_cat_list, _, _, _, n_covariance2, n_mu, d2, w_covariance3, _ = net.dpmm(input_data)  # N * K
-#                         _, z= net.scdp(input_data)  # N * K
-                    
-#                         # print(input_data['x']['rna'].shape, z.shape)
-#                         utils.save_tensor_to_csv(z, pj(dirs[subset_id]["z"][m], fname_fmt) % i)    
-#                         # utils.save_tensor_to_csv(predict_label, pj(dirs[subset_id]["predict_label"][m], fname_fmt) % i)  
-#                 if i >0:
-#                     z_all = th.cat((z_all, z), dim = 0)
-#                 else:
-#                     z_all = z
-#             _, _, _, _, _, predict_label = dp_infer(z_all)
-            
-#                 # print("predict_label", predict_label1[0:8])
-#                 # print("predict_label", predict_label1.size())
-#                 # predict_label_list = utils.convert_tensor_to_list((th.argmax(predict_label1, dim = 1).unsqueeze(1)).type_as(predict_label1))
-#                 # print("predict_labellist:", predict_label_list[1:10]) 
-#             predict_label_list = utils.convert_tensor_to_list(predict_label)
-#             if o.task == 'chen_10':
-#                 utils.save_list_to_csv(predict_label_list, "./data/chen_10/predict_label.csv")
-#                 # path_label = '/root/data/asj/2023/0118/sc-transformer-gmvaextoytoz/data/tab1/label_seurat/label2_10.csv'
-#             elif o.task == 'tabula2_8':
-#                 utils.save_list_to_csv(predict_label_list, "/root/data/asj/2023/0118/sc-transformer-gmvaextoytoz/data/tab1/label_seurat/predict_label2_80224less.csv")
-#             elif o.task == 'tabula2_6':
-#                 utils.save_list_to_csv(predict_label_list, "/root/data/asj/2023/0118/sc-transformer-gmvaextoytoz/data/tab1/label_seurat/predict_label2_60224less.csv")   
-#             elif o.task == 'tabula2_4':
-#                 utils.save_list_to_csv(predict_label_list, "/root/data/asj/2023/0118/sc-transformer-gmvaextoytoz/data/tab1/label_seurat/predict_label2_4save.csv") 
-#             else:
-#                 # utils.save_list_to_csv(predict_label_list, "/root/data/asj/2023/0721_2/scDAC/result/wnn_t/e0/default/represent/sp_latest/predict_label.csv")    
-#                 utils.save_list_to_csv(predict_label_list, "/root/data/asj/2023/0721_2/scDAC/result/pancreas_t/e0/default/represent/sp_latest/predict_label.csv")         
-#             # utils.save_list_to_csv(predict_label_list, "/root/data/asj/2023/0118/sc-transformer-gmvaextoytoz/data/tab1/label_seurat/predict_label02093.csv")
-#                 # print("data_list:", data_list[1:8])
-#                 # if i > 33:
-#             z_all_cpu = z_all.cpu()
-#             predict_label_cpu = predict_label.cpu()
-#             # path_label = '/root/data/asj/2023/0118/sc-transformer-gmvaextoytoz/data/m1/label_seurat/label_Macosko.csv'
-#             label_true = utils.load_csv(path_label)
-#             label_tlist = utils.transpose_list(label_true)[1][1:]
-#             label_plist = utils.transpose_list(predict_label_cpu)[0]
-#             ari = adjusted_rand_score(label_tlist, label_plist) #l1 kpca20
-#             nmi = normalized_mutual_info_score(label_tlist, label_plist)
-#             sc = silhouette_score(z_all_cpu, label_plist)
-#             print("ari:", ari)
-#             print("nmi:", nmi)
-#             print("sc:", (sc+1)/2)
 main()
 # CPU memory and time
 # current, peak = tracemalloc.get_traced_memory()
