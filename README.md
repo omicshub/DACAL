@@ -68,7 +68,7 @@ Then we can obtain the predict label and ARI, NMI and SC sore.
 
 There are some available options in DACAL.
 
-1. The α in 
+1. The hyperparameter α is defined in "DACAL/run.py" on line 310, which is is indicated as "weight_concentration_prior". The larger α leads to the more uniform distribution of weights, which means the greater number of clusters. However, DACAL is robust to hyperparameter α changes.
 
-
+2. The dimension of low-dimensional representation and network are given at "DACAL/configs/model.toml", which can be adjusted if necessary.
 
