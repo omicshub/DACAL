@@ -29,11 +29,11 @@ Decompress the expression matrix file in DACAL/data
 
  Run the following command to train the DACAL model:
  
-    $ CUDA_VISIBLE_DEVICES=0 py run.py --task mammary_epithelial 
+    CUDA_VISIBLE_DEVICES=0 py run.py --task mammary_epithelial 
 
 To infer the labels after training, run the following command:
 
-    $ CUDA_VISIBLE_DEVICES=0 py run.py --actions infer_latent --task mammary_epithelial --init_model sp_latest
+    CUDA_VISIBLE_DEVICES=0 py run.py --actions infer_latent --task mammary_epithelial --init_model sp_latest
 
 You can obtain the predicted clustering labels and the ARI, NMI and SC metrics are also calculated in this step. 
 
