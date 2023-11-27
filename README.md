@@ -60,6 +60,7 @@ We can use "DACAL/preprocess_split.ipynb" to split the matrix to vectors. The ve
 
       CUDA_VISIBLE_DEVICES=0 py run.py --action infer_latent --task [datasetname] --init-model sp_latest
 
+
 Then we can obtain the predict label and ARI, NMI and SC sore.
 
 
